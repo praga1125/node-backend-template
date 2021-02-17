@@ -25,32 +25,54 @@ const initialize = () => {
   });
 }
 
-const addUser = () => {
-
+const addUser = ({regNum, name, DOB ,department}) => {
+  return new Promise((resolve, reject) => {
+    const query = `INSERT INTO studentRecords VALUES(${parseInt(regNum)},"${name}","${department}","${DOB}");`
+    connection.query(query , function(err) {
+      if(err) reject('Duplicate user data.');
+      resolve('Student data added.');
+    });
+  });
 }
 
 const viewUsers = () => {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM studentRecords', function (error, results) {
+    connection.query('SELECT * FROM studentRecords', function(error, results) {
       if(error) reject(error);
       resolve(results);
     });
   })
 }
 
-const viewUser = () => {
-  
+const viewUser = (regNum) => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM studentRecords where reg_No='+regNum, (err, results) => {
+      if(err) reject('No Student record found.',err);
+      resolve(results);
+    });
+  });
 }
 
-const updateUser = () => {
-
+const updateUser = ({regNum, name, department, DOB}) => {
+  return new Promise((resolve, reject) => {
+    const query = `UPDATE studentRecords SET name = "${name}", department = "${department}" , DOB = "${DOB}" WHERE reg_No = ${parseInt(regNum)};`;
+    connection.query(query, (err, results) => {
+      if(err) reject('Record update failed: ' , err);
+      resolve(results);
+    });
+  });
 }
 
-const deleteUser = () => {
-
+const deleteUser = (regNum) => {
+  return new Promise((resolve, reject) => {
+    const query = `DELETE FROM studentRecords WHERE reg_No = ${parseInt(regNum)};` 
+    console.log(query);
+    connection.query(query, (err) => {
+      if(err) reject('Delete failed: ', err)
+      resolve();
+    });
+  });
 }
-
-// initialize();
 
 module.exports = {
   initialize,
@@ -78,5 +100,4 @@ Asynchronous:
 1. File operations
 2. Database operations
 3. Server calls
-
 */
